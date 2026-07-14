@@ -176,8 +176,8 @@ export default function GraphView({ nodes = {}, edges = [], width = 700, height 
       ctx.fillStyle = "#fff";
       ctx.font = "12px sans-serif";
       ctx.textAlign = "left";
-      ctx.fillText("??: " + n.label, 18, 28);
-      ctx.fillText("??: " + n.type, 18, 44);
+      ctx.fillText("名称: " + n.label, 18, 28);
+      ctx.fillText("类型: " + n.type, 18, 44);
       ctx.fillText("ID: " + n.id, 18, 60);
     }
 

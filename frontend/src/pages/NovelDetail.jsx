@@ -8,7 +8,7 @@ export default function NovelDetail() {
   const [novel, setNovel] = useState(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("overview");
-  const [settings, setSettings] = useState({ writing_style: "", pov: "????", tone: "", pace: "??", custom_instructions: "" });
+  const [settings, setSettings] = useState({ writing_style: "", pov: "第三人称", tone: "", pace: "适中", custom_instructions: "" });
   const [graphData, setGraphData] = useState(null);
   const [consistencyIssues, setConsistencyIssues] = useState([]);
   const [evalResult, setEvalResult] = useState(null);
@@ -38,8 +38,8 @@ export default function NovelDetail() {
     try {
       const r = await fetch("/api/novels/" + id + "/export?fmt=" + fmt, { method: "POST" });
       const d = await r.json();
-      if (d.message) setExportMsg(fmt.toUpperCase() + " ????: " + d.filename);
-    } catch(e) { setExportMsg("????: " + e.message); }
+      if (d.message) setExportMsg(fmt.toUpperCase() + " 导出成功: " + d.filename);
+    } catch(e) { setExportMsg("导出失败: " + e.message); }
     setTimeout(() => setExportMsg(""), 5000);
   }
   async function loadForeshadowClues() {
@@ -71,18 +71,18 @@ export default function NovelDetail() {
 
   useEffect(() => { if (novel) { loadGraphData(); loadConsistency(); loadForeshadowClues(); } }, [novel?.id]);
 
-  if (loading) return <div className="flex items-center justify-center h-64"><div className="animate-pulse text-gray-500">???...</div></div>;
-  if (!novel) return <div className="text-center py-12 text-gray-500">?????</div>;
+  if (loading) return <div className="flex items-center justify-center h-64"><div className="animate-pulse text-gray-500">加载中...</div></div>;
+  if (!novel) return <div className="text-center py-12 text-gray-500">找不到小说</div>;
 
   const p = novel.word_count_target > 0 ? Math.min(100, Math.round((novel.word_count_current / novel.word_count_target) * 100)) : 0;
   const tabs = [
-    { id: "overview", label: "??", icon: BookOpen },
-    { id: "chapters", label: "??", icon: FileText },
-    { id: "characters", label: "??", icon: Users },
-    { id: "timeline", label: "???", icon: Clock },
-    { id: "world", label: "???", icon: Layers },
-    { id: "graph", label: "????", icon: GitBranch },
-    { id: "foreshadowing", label: "????", icon: Eye },
+    { id: "overview", label: "概览", icon: BookOpen },
+    { id: "chapters", label: "章节", icon: FileText },
+    { id: "characters", label: "人物", icon: Users },
+    { id: "timeline", label: "时间轴", icon: Clock },
+    { id: "world", label: "世界观", icon: Layers },
+    { id: "graph", label: "关系图", icon: GitBranch },
+    { id: "foreshadowing", label: "伏笔管理", icon: Eye },
   ];
 
   return (
@@ -99,7 +99,7 @@ export default function NovelDetail() {
           </div>
         </div>
         <div className="mt-4">
-          <div className="flex justify-between text-xs text-gray-500 mb-1"><span>????</span><span>??: 500??</span></div>
+          <div className="flex justify-between text-xs text-gray-500 mb-1"><span>进度</span><span>目标: 500万字</span></div>
           <div className="w-full h-2 bg-gray-800 rounded-full overflow-hidden">
             <div className="h-full bg-gradient-to-r from-soul-600 to-purple-500 rounded-full transition-all duration-500" style={{ width: p + "%" }} />
           </div>
@@ -121,49 +121,49 @@ export default function NovelDetail() {
         <div className="grid md:grid-cols-3 gap-4">
           <div className="md:col-span-2 space-y-4">
             <div className="card">
-              <div className="card-header"><Sparkles size={18} className="text-soul-400" /> AI ????</div>
+              <div className="card-header"><Sparkles size={18} className="text-soul-400" /> AI 生成设置</div>
               <div className="space-y-3">
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-xs text-gray-500 mb-1">????</label>
+                    <label className="block text-xs text-gray-500 mb-1">写作风格</label>
                     <select className="select-field w-full" value={settings.writing_style} onChange={e => setSettings({ ...settings, writing_style: e.target.value })}>
-                      <option value="">??</option><option value="????">????</option><option value="????">????</option><option value="????">????</option><option value="????">????</option>
+                      <option value="">??</option><option value="简明">简明拢要</option><option value="华丽">华丽辞藻</option><option value="简明">简明拢要</option><option value="华丽">华丽辞藻</option>
                     </select>
                   </div>
                   <div>
-                    <label className="block text-xs text-gray-500 mb-1">????</label>
+                    <label className="block text-xs text-gray-500 mb-1">写作风格</label>
                     <select className="select-field w-full" value={settings.pov} onChange={e => setSettings({ ...settings, pov: e.target.value })}>
-                      <option value="????">????</option><option value="????">????</option><option value="?????">?????</option>
+                      <option value="简明">简明拢要</option><option value="华丽">华丽辞藻</option><option value="全知视角">全知视角</option>
                     </select>
                   </div>
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-xs text-gray-500 mb-1">????</label>
+                    <label className="block text-xs text-gray-500 mb-1">写作风格</label>
                     <select className="select-field w-full" value={settings.tone} onChange={e => setSettings({ ...settings, tone: e.target.value })}>
-                      <option value="">??</option><option value="????">????</option><option value="????">????</option><option value="????">????</option>
+                      <option value="">??</option><option value="简明">简明拢要</option><option value="华丽">华丽辞藻</option><option value="朴素">朴素平实</option>
                     </select>
                   </div>
                   <div>
-                    <label className="block text-xs text-gray-500 mb-1">????</label>
+                    <label className="block text-xs text-gray-500 mb-1">写作风格</label>
                     <select className="select-field w-full" value={settings.pace} onChange={e => setSettings({ ...settings, pace: e.target.value })}>
-                      <option value="??">????????</option><option value="??">??????</option><option value="??">?????????</option>
+                      <option value="舒缓">舒缓细腻的叙事</option><option value="紧凑">紧凑明快的叙事</option><option value="张弛">张弛有度的叙事</option>
                     </select>
                   </div>
                 </div>
                 <div>
-                  <label className="block text-xs text-gray-500 mb-1">????</label>
-                  <textarea className="input-field w-full h-16 resize-none" value={settings.custom_instructions} onChange={e => setSettings({ ...settings, custom_instructions: e.target.value })} placeholder="????..." />
+                  <label className="block text-xs text-gray-500 mb-1">自定义指令</label>
+                  <textarea className="input-field w-full h-16 resize-none" value={settings.custom_instructions} onChange={e => setSettings({ ...settings, custom_instructions: e.target.value })} placeholder="输入备注..." />
                 </div>
                 <div className="flex gap-3">
-                  <button onClick={genOutline} className="btn-primary flex items-center gap-2"><Sparkles size={16} /> ????</button>
-                  <button onClick={genChapter} className="btn-secondary flex items-center gap-2" disabled={!novel.outline}><FileText size={16} /> ?????</button>
+                  <button onClick={genOutline} className="btn-primary flex items-center gap-2"><Sparkles size={16} /> 生成大纲</button>
+                  <button onClick={genChapter} className="btn-secondary flex items-center gap-2" disabled={!novel.outline}><FileText size={16} /> 生成下一章</button>
                 </div>
               </div>
             </div>
             {novel.outline && (
               <div className="card">
-                <div className="card-header"><BookOpen size={18} className="text-green-400" /> ????</div>
+                <div className="card-header"><BookOpen size={18} className="text-green-400" /> 故事大纲</div>
                 <div className="text-sm text-gray-400 whitespace-pre-wrap font-serif leading-relaxed">
                   {typeof novel.outline === "string" ? novel.outline : novel.outline?.content || JSON.stringify(novel.outline, null, 2)}
                 </div>
@@ -172,8 +172,8 @@ export default function NovelDetail() {
           </div>
           <div className="space-y-4">
             <div className="card">
-              <div className="card-header"><Award size={18} className="text-amber-400" /> ????</div>
-              <button onClick={evalLatest} className="btn-secondary w-full text-sm">??????</button>
+              <div className="card-header"><Award size={18} className="text-amber-400" /> 小说评估</div>
+              <button onClick={evalLatest} className="btn-secondary w-full text-sm">同步评估</button>
               {evalResult && (
                 <div className="mt-3 space-y-2">
                   <div className="text-center"><span className="text-2xl font-bold text-soul-400">{evalResult.overall_score}</span><span className="text-gray-500 text-sm ml-1">?</span></div>
@@ -183,16 +183,16 @@ export default function NovelDetail() {
               )}
             </div>
                         <div className="card">
-              <div className="card-header"><Download size={18} className="text-green-400" /> ????</div>
+              <div className="card-header"><Download size={18} className="text-green-400" /> 故事大纲</div>
               <div className="space-y-2">
-                <button onClick={exportNovelTxt} className="btn-secondary w-full text-sm flex items-center justify-center gap-2"><Download size={14} /> ?? TXT</button>
-                <button onClick={exportNovelEpub} className="btn-secondary w-full text-sm flex items-center justify-center gap-2"><Archive size={14} /> ?? EPUB</button>
+                <button onClick={exportNovelTxt} className="btn-secondary w-full text-sm flex items-center justify-center gap-2"><Download size={14} /> 导出 TXT</button>
+                <button onClick={exportNovelEpub} className="btn-secondary w-full text-sm flex items-center justify-center gap-2"><Archive size={14} /> 导出 EPUB</button>
                 {exportMsg && <div className="text-xs text-green-400 text-center">{exportMsg}</div>}
               </div>
             </div>
             {consistencyIssues.length > 0 && (
               <div className="card">
-                <div className="card-header"><Award size={18} className="text-amber-400" /> ?????</div>
+                <div className="card-header"><Award size={18} className="text-amber-400" /> 一致性问题</div>
                 <div className="space-y-2 text-sm">
                   {consistencyIssues.slice(0, 5).map((issue, i) => (
                     <div key={i} className="flex items-start gap-2 text-xs">
@@ -205,7 +205,7 @@ export default function NovelDetail() {
             )}
             {novel.graph_stats && (
               <div className="card">
-                <div className="card-header"><GitBranch size={18} className="text-purple-400" /> ??????</div>
+                <div className="card-header"><GitBranch size={18} className="text-purple-400" /> 图数据统计</div>
                 <div className="space-y-2 text-sm">
                   {Object.entries(novel.graph_stats.node_types || {}).map(([k, v]) => v > 0 && <div key={k} className="flex justify-between"><span className="text-gray-500">{k}</span><span className="text-white">{v}</span></div>)}
                 </div>
@@ -281,7 +281,7 @@ function ChapterView({ chapters, id, settings, onRefresh }) {
   return (
     <div className="card">
       <div className="card-header flex items-center justify-between">
-        <span className="flex items-center gap-2"><FileText size={18} className="text-soul-400" /> ???? ({chapters.length})</span>
+        <span className="flex items-center gap-2"><FileText size={18} className="text-soul-400" /> 章节列表 ({chapters.length})</span>
         <div className="flex gap-2">
           <button onClick={handleGenChapter} disabled={generating} className="btn-primary text-xs px-3 py-1.5">
             {generating ? "???..." : "?????"}
@@ -289,7 +289,7 @@ function ChapterView({ chapters, id, settings, onRefresh }) {
         </div>
       </div>
       {chapters.length === 0 ? (
-        <div className="text-center py-8 text-gray-500">???????????</div>
+        <div className="text-center py-8 text-gray-500">还没有生成任何章节</div>
       ) : (
         <div className="space-y-2">
           {chapters.map((ch, i) => (
@@ -298,7 +298,7 @@ function ChapterView({ chapters, id, settings, onRefresh }) {
                 className="w-full flex items-center justify-between p-3 hover:bg-gray-800/60 transition-colors">
                 <div className="flex items-center gap-3">
                   <span className="w-7 h-7 rounded-full bg-soul-600/20 text-soul-400 text-xs flex items-center justify-center font-medium">{ch.chapter_number || i + 1}</span>
-                  <span className="text-sm text-gray-200">{ch.title || `?${ch.chapter_number || i + 1}?`}</span>
+                  <span className="text-sm text-gray-200">{ch.title || `第${ch.chapter_number || i + 1}章`}</span>
                 </div>
                 <div className="flex items-center gap-3">
                   <span className="text-xs text-gray-500">{ch.word_count || 0}?</span>
@@ -308,7 +308,7 @@ function ChapterView({ chapters, id, settings, onRefresh }) {
               {expanded === i && (
                 <div className="px-3 pb-3">
                   <div className="text-sm text-gray-400 whitespace-pre-wrap font-serif leading-relaxed max-h-96 overflow-y-auto border-t border-gray-700 pt-3">
-                    {ch.content || "??????"}
+                    {ch.content || "暂无内容"}
                   </div>
                 </div>
               )}
@@ -318,10 +318,10 @@ function ChapterView({ chapters, id, settings, onRefresh }) {
       )}
       {chapters.length > 0 && (
         <div className="mt-4 pt-4 border-t border-gray-800">
-          <label className="block text-xs text-gray-500 mb-2">????????????</label>
+          <label className="block text-xs text-gray-500 mb-2">输入修改反馈</label>
           <div className="flex gap-2">
-            <textarea className="input-field flex-1 h-16 resize-none text-sm" value={genFeedback} onChange={e => setGenFeedback(e.target.value)} placeholder="??????..." />
-            <button onClick={handleRevise} disabled={!genFeedback.trim()} className="btn-secondary text-xs px-3 self-end">??</button>
+            <textarea className="input-field flex-1 h-16 resize-none text-sm" value={genFeedback} onChange={e => setGenFeedback(e.target.value)} placeholder="输入反馈意见..." />
+            <button onClick={handleRevise} disabled={!genFeedback.trim()} className="btn-secondary text-xs px-3 self-end">修订</button>
           </div>
         </div>
       )}
@@ -336,15 +336,15 @@ function CharacterView({ chars }) {
 
   if (!characterList.length) return (
     <div className="card">
-      <div className="card-header"><Users size={18} className="text-soul-400" /> ??</div>
-      <div className="text-center py-8 text-gray-500">??????????????????????</div>
+      <div className="card-header"><Users size={18} className="text-soul-400" /> 人物</div>
+      <div className="text-center py-8 text-gray-500">还没有时间轴数据，生成章节后自动创建</div>
     </div>
   );
 
   return (
     <div className="grid md:grid-cols-2 gap-4">
       <div className="card">
-        <div className="card-header"><Users size={18} className="text-soul-400" /> ?? ({characterList.length})</div>
+        <div className="card-header"><Users size={18} className="text-soul-400" /> 角色 ({characterList.length})</div>
         <div className="grid gap-3">
           {characterList.map((ch, i) => (
             <div key={ch.id || i} className="bg-gray-800/40 rounded-lg p-3">
@@ -363,14 +363,14 @@ function CharacterView({ chars }) {
                 </div>
               )}
               {ch.background && <p className="text-xs text-gray-500 line-clamp-2">{ch.background}</p>}
-              {ch.motivation && <p className="text-xs text-gray-600 mt-1">??: {ch.motivation}</p>}
+              {ch.motivation && <p className="text-xs text-gray-600 mt-1">动机: {ch.motivation}</p>}
             </div>
           ))}
         </div>
       </div>
       {relationships.length > 0 && (
         <div className="card">
-          <div className="card-header"><GitBranch size={18} className="text-purple-400" /> ???? ({relationships.length})</div>
+          <div className="card-header"><GitBranch size={18} className="text-purple-400" /> 关系图谱 ({relationships.length})</div>
           <div className="space-y-2">
             {relationships.map((r, i) => (
               <div key={i} className="flex items-center gap-2 text-sm bg-gray-800/30 rounded-lg p-2">
@@ -390,14 +390,14 @@ function CharacterView({ chars }) {
 function TimelineView({ events }) {
   if (!events || events.length === 0) return (
     <div className="card">
-      <div className="card-header"><Clock size={18} className="text-soul-400" /> ???</div>
-      <div className="text-center py-8 text-gray-500">??????????????????????</div>
+      <div className="card-header"><Clock size={18} className="text-soul-400" /> 时间轴</div>
+      <div className="text-center py-8 text-gray-500">还没有时间轴数据，生成章节后自动创建</div>
     </div>
   );
 
   return (
     <div className="card">
-      <div className="card-header"><Clock size={18} className="text-soul-400" /> ??? ({events.length})</div>
+      <div className="card-header"><Clock size={18} className="text-soul-400" /> 时间轴 ({events.length})</div>
       <div className="relative">
         <div className="absolute left-4 top-0 bottom-0 w-px bg-soul-600/30" />
         <div className="space-y-4 pl-10">
@@ -406,7 +406,7 @@ function TimelineView({ events }) {
               <div className="absolute -left-6 top-1 w-3 h-3 rounded-full bg-soul-600 border-2 border-gray-900" />
               <div className="bg-gray-800/40 rounded-lg p-3">
                 <div className="flex items-center gap-2 mb-1">
-                  <span className="text-xs text-soul-400">{ev.timestamp || ev.time || `?? ${i + 1}`}</span>
+                  <span className="text-xs text-soul-400">{ev.timestamp || ev.time || `事件 ${i + 1}`}</span>
                   <span className="text-xs tag-gray">{ev.node_type || "event"}</span>
                 </div>
                 <div className="text-sm text-white font-medium">{ev.name || ev.title || ev.id}</div>
@@ -424,15 +424,15 @@ function TimelineView({ events }) {
 function WorldView({ scenes }) {
   if (!scenes || scenes.length === 0) return (
     <div className="card">
-      <div className="card-header"><Layers size={18} className="text-soul-400" /> ??????</div>
-      <div className="text-center py-8 text-gray-500">???????</div>
+      <div className="card-header"><Layers size={18} className="text-soul-400" /> 场景/世界观</div>
+      <div className="text-center py-8 text-gray-500">还没有场景数据</div>
     </div>
   );
 
   return (
     <div className="grid md:grid-cols-2 gap-4">
       <div className="card">
-        <div className="card-header"><Layers size={18} className="text-soul-400" /> ???? ({scenes.length})</div>
+        <div className="card-header"><Layers size={18} className="text-soul-400" /> 场景列表 ({scenes.length})</div>
         <div className="space-y-2">
           {scenes.map((s, i) => (
             <div key={i} className="bg-gray-800/40 rounded-lg p-3">
@@ -476,13 +476,12 @@ function GraphTabView({ novelId, graphData }) {
 
   return (
     <div className="card">
-      <div className="card-header"><GitBranch size={18} className="text-soul-400" /> ????</div>
+      <div className="card-header"><GitBranch size={18} className="text-soul-400" /> 关系图谱</div>
       {Object.keys(allNodes).length > 0 ? (
         <GraphView nodes={allNodes} edges={allEdges} width={800} height={500} />
       ) : (
         <div className="text-center py-8 text-gray-500">
-          ?????????????????????????
-        </div>
+          还没有时间轴数据，生成章节后自动创建</div>
       )}
     </div>
   );
@@ -523,7 +522,7 @@ function ForeshadowingView({ novelId, clues, onRefresh, currentChapter }) {
   }
 
   async function deleteClue(clueId) {
-    if (!confirm("??????????")) return;
+    if (!confirm("确定要删除该伏笔吗？")) return;
     try {
       await fetch("/api/novels/" + novelId + "/foreshadowing/" + clueId, { method: "DELETE" });
       onRefresh();
@@ -537,73 +536,73 @@ function ForeshadowingView({ novelId, clues, onRefresh, currentChapter }) {
       <div className="md:col-span-2 space-y-4">
         <div className="card">
           <div className="card-header flex items-center justify-between">
-            <span className="flex items-center gap-2"><Eye size={18} className="text-soul-400" /> ???? ({clues.length})</span>
-            <button onClick={() => setShowAdd(!showAdd)} className="btn-primary text-xs px-3 py-1.5">{showAdd ? "??" : "+ ????"}</button>
+            <span className="flex items-center gap-2"><Eye size={18} className="text-soul-400" /> 伏笔管理 ({clues.length})</span>
+            <button onClick={() => setShowAdd(!showAdd)} className="btn-primary text-xs px-3 py-1.5">{showAdd ? "取消" : "+ 添加伏笔"}</button>
           </div>
           {showAdd && (
             <div className="bg-gray-800/40 rounded-lg p-4 mb-4 space-y-3">
               <div>
-                <label className="block text-xs text-gray-500 mb-1">???? *</label>
-                <textarea className="input-field w-full h-16 resize-none" value={newClue.description} onChange={e => setNewClue({...newClue, description: e.target.value})} placeholder="????????..." />
+                <label className="block text-xs text-gray-500 mb-1">伏笔描述 *</label>
+                <textarea className="input-field w-full h-16 resize-none" value={newClue.description} onChange={e => setNewClue({...newClue, description: e.target.value})} placeholder="描述伏笔的具体内容..." />
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs text-gray-500 mb-1">??</label>
+                  <label className="block text-xs text-gray-500 mb-1">类型</label>
                   <select className="select-field w-full" value={newClue.clue_type} onChange={e => setNewClue({...newClue, clue_type: e.target.value})}>
                     <option value="general">??</option>
-                    <option value="character">??</option>
-                    <option value="object">??</option>
-                    <option value="event">??</option>
-                    <option value="prophecy">??</option>
-                    <option value="dialogue">??</option>
+                    <option value="character">人物</option>
+                    <option value="object">物品</option>
+                    <option value="event">事件</option>
+                    <option value="prophecy">预言</option>
+                    <option value="dialogue">对话</option>
                   </select>
                 </div>
                 <div>
-                  <label className="block text-xs text-gray-500 mb-1">????</label>
+                  <label className="block text-xs text-gray-500 mb-1">重要程度</label>
                   <select className="select-field w-full" value={newClue.importance} onChange={e => setNewClue({...newClue, importance: parseInt(e.target.value)})}>
-                    <option value={5}>????</option>
-                    <option value={4}>????</option>
-                    <option value={3}>????</option>
-                    <option value={2}>????</option>
-                    <option value={1}>????</option>
+                    <option value={5}>朴素平实</option>
+                    <option value={4}>朴素平实</option>
+                    <option value={3}>朴素平实</option>
+                    <option value={2}>朴素平实</option>
+                    <option value={1}>朴素平实</option>
                   </select>
                 </div>
                 <div>
-                  <label className="block text-xs text-gray-500 mb-1">????</label>
+                  <label className="block text-xs text-gray-500 mb-1">埋设章节</label>
                   <input className="input-field w-full" type="number" value={newClue.planted_chapter} onChange={e => setNewClue({...newClue, planted_chapter: parseInt(e.target.value)})} />
                 </div>
                 <div>
-                  <label className="block text-xs text-gray-500 mb-1">??????</label>
+                  <label className="block text-xs text-gray-500 mb-1">预期回收章节</label>
                   <input className="input-field w-full" type="number" value={newClue.expected_recall_chapter} onChange={e => setNewClue({...newClue, expected_recall_chapter: parseInt(e.target.value)})} />
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs text-gray-500 mb-1">???? (????)</label>
-                  <input className="input-field w-full" value={newClue.related_entities} onChange={e => setNewClue({...newClue, related_entities: e.target.value})} placeholder="???,???" />
+                  <label className="block text-xs text-gray-500 mb-1">关联实体 (用逗号分隔)</label>
+                  <input className="input-field w-full" value={newClue.related_entities} onChange={e => setNewClue({...newClue, related_entities: e.target.value})} placeholder="张三,李四" />
                 </div>
                 <div>
-                  <label className="block text-xs text-gray-500 mb-1">??? (????)</label>
-                  <input className="input-field w-full" value={newClue.keywords} onChange={e => setNewClue({...newClue, keywords: e.target.value})} placeholder="?,??,??" />
+                  <label className="block text-xs text-gray-500 mb-1">关键词 (用逗号分隔)</label>
+                  <input className="input-field w-full" value={newClue.keywords} onChange={e => setNewClue({...newClue, keywords: e.target.value})} placeholder="剑,江湖,恩怨" />
                 </div>
               </div>
               <div>
                 <label className="block text-xs text-gray-500 mb-1">??</label>
-                <textarea className="input-field w-full h-12 resize-none" value={newClue.notes} onChange={e => setNewClue({...newClue, notes: e.target.value})} placeholder="????..." />
+                <textarea className="input-field w-full h-12 resize-none" value={newClue.notes} onChange={e => setNewClue({...newClue, notes: e.target.value})} placeholder="输入备注..." />
               </div>
-              <button onClick={addClue} disabled={!newClue.description.trim()} className="btn-primary w-full">????</button>
+              <button onClick={addClue} disabled={!newClue.description.trim()} className="btn-primary w-full">添加伏笔</button>
             </div>
           )}
           <div className="flex gap-2 mb-3">
             {["all", "planted", "active", "fulfilled"].map(s => (
               <button key={s} onClick={() => setFilterStatus(s)}
                 className={`text-xs px-2.5 py-1 rounded transition-colors ${filterStatus === s ? "bg-soul-600/20 text-soul-400" : "bg-gray-800 text-gray-500 hover:text-gray-300"}`}>
-                {s === "all" ? "??" : s === "planted" ? "???" : s === "active" ? "???" : "???"}
+                {s === "all" ? "全部" : s === "planted" ? "已埋设" : s === "active" ? "激活中" : "已回攸"}
               </button>
             ))}
           </div>
           {filteredClues.length === 0 ? (
-            <div className="text-center py-6 text-gray-500">????</div>
+            <div className="text-center py-6 text-gray-500">暂无伏笔</div>
           ) : (
             <div className="space-y-2">
               {filteredClues.map((clue, i) => (
@@ -623,7 +622,7 @@ function ForeshadowingView({ novelId, clues, onRefresh, currentChapter }) {
                     <div className="px-3 pb-3 text-xs text-gray-400 border-t border-gray-700 pt-3 space-y-1">
                       <p><span className="text-gray-500">??:</span> {clue.description}</p>
                       <p><span className="text-gray-500">??:</span> {clue.clue_type} <span className="text-gray-500">| ???:</span> {clue.planted_chapter} <span className="text-gray-500">| ????:</span> {clue.expected_recall_chapter || "???"}</p>
-                      {clue.actual_recall_chapter > 0 && <p><span className="text-gray-500">??????:</span> {clue.actual_recall_chapter}</p>}
+                      {clue.actual_recall_chapter > 0 && <p><span className="text-gray-500">实际回收章节:</span> {clue.actual_recall_chapter}</p>}
                       {clue.related_entities?.length > 0 && <p><span className="text-gray-500">????:</span> {clue.related_entities.join(", ")}</p>}
                       {clue.keywords?.length > 0 && <p><span className="text-gray-500">???:</span> <span className="flex flex-wrap gap-1 mt-1">{clue.keywords.map((kw, j) => <span key={j} className="bg-soul-600/10 text-soul-400 px-1.5 py-0.5 rounded text-xs">{kw}</span>)}</span></p>}
                       {clue.notes && <p><span className="text-gray-500">??:</span> {clue.notes}</p>}
@@ -641,11 +640,11 @@ function ForeshadowingView({ novelId, clues, onRefresh, currentChapter }) {
       </div>
       <div className="space-y-4">
         <div className="card">
-          <div className="card-header"><Eye size={18} className="text-soul-400" /> ????</div>
+          <div className="card-header"><Eye size={18} className="text-soul-400" /> 关系图谱</div>
           <div className="space-y-3">
             <div className="text-center p-4 bg-gray-800/40 rounded-lg">
               <div className="text-3xl font-bold text-soul-400">{clues.length}</div>
-              <div className="text-xs text-gray-500">????</div>
+              <div className="text-xs text-gray-500">总伏笔数</div>
             </div>
             <div className="grid grid-cols-3 gap-2 text-center">
               <div className="bg-gray-800/40 rounded-lg p-2">
@@ -664,11 +663,11 @@ function ForeshadowingView({ novelId, clues, onRefresh, currentChapter }) {
           </div>
         </div>
         <div className="card">
-          <div className="card-header text-xs text-gray-500">??????</div>
+          <div className="card-header text-xs text-gray-500">状态图例</div>
           <div className="space-y-1 text-xs text-gray-500">
-            <p><span className="w-2 h-2 rounded-full bg-red-500 inline-block mr-1"></span> ???? - ????????</p>
-            <p><span className="w-2 h-2 rounded-full bg-blue-500 inline-block mr-1"></span> ???? - ????</p>
-            <p><span className="w-2 h-2 rounded-full bg-green-500 inline-block mr-1"></span> ??? - ????</p>
+            <p><span className="w-2 h-2 rounded-full bg-red-500 inline-block mr-1"></span> 重要伏笔 - 待回收</p>
+            <p><span className="w-2 h-2 rounded-full bg-blue-500 inline-block mr-1"></span> 普通伏笔 - 已埋设</p>
+            <p><span className="w-2 h-2 rounded-full bg-green-500 inline-block mr-1"></span> 已回收 - 已完成</p>
           </div>
         </div>
       </div>
