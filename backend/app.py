@@ -45,7 +45,7 @@ ev = NovelEvaluator()
 opt = NovelOptimizer(ev)
 
 llm = LLMClient()
-
+llm.load_persisted()
 gen = GenerationPipeline(kb, gs, ev, llm)
 
 ft = ForeshadowingTracker()

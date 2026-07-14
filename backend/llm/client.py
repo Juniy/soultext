@@ -65,12 +65,78 @@ class LLMClient:
 
     def update_config(self, **kwargs):
         for k, v in kwargs.items():
-            if hasattr(self.config, k) and v is not None:
-                if k == "provider" and isinstance(v, str):
-                    try: setattr(self.config, k, LLMProvider(v))
+           if hasattr(self.config, k) and v is not None:
+               if k == "provider" and isinstance(v, str):
+                   try: setattr(self.config, k, LLMProvider(v))
+                   except ValueError: pass
+               else:
+                   setattr(self.config, k, v)
+        self._save_persisted()
+
+    def _persisted_path(self) -> str:
+        return os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data", "llm_config.json")
+
+    def _save_persisted(self):
+        try:
+            p = self._persisted_path()
+            os.makedirs(os.path.dirname(p), exist_ok=True)
+            data = {
+                "provider": self.config.provider.value,
+                "api_key": self.config.api_key,
+                "base_url": self.config.base_url,
+                "model": self.config.model,
+                "max_tokens": self.config.max_tokens,
+                "temperature": self.config.temperature,
+            }
+            with open(p, "w", encoding="utf-8") as f:
+                json.dump(data, f, ensure_ascii=False, indent=2)
+        except Exception as e:
+            print(f"Failed to persist LLM config: {e}")
+
+    def load_persisted(self):
+        try:
+            p = self._persisted_path()
+            if os.path.exists(p):
+                with open(p, "r", encoding="utf-8") as f:
+                    data = json.load(f)
+                if data.get("api_key"):
+                    self.config.api_key = data["api_key"]
+                if data.get("base_url"):
+                    self.config.base_url = data["base_url"]
+                if data.get("model"):
+                    self.config.model = data["model"]
+                if data.get("provider"):
+                    try: self.config.provider = LLMProvider(data["provider"])
                     except ValueError: pass
-                else:
-                    setattr(self.config, k, v)
+                if data.get("max_tokens"):
+                    self.config.max_tokens = data["max_tokens"]
+                if data.get("temperature"):
+                    self.config.temperature = data["temperature"]
+                return True
+        except Exception as e:
+            print(f"Failed to load persisted LLM config: {e}")
+        return False
+
+    async def test_connection(self) -> Dict:
+        result = {"success": False, "message": "", "latency_ms": 0}
+        if not self.config.api_key:
+            result["message"] = "未配置 API Key"
+            return result
+        import time
+        t0 = time.time()
+        try:
+            messages = [{"role": "user", "content": "你好，请回复'连接正常'这四个字，不要回复其他内容。"}]
+            response = await self.chat(messages)
+            latency = int((time.time() - t0) * 1000)
+            if response and "error" not in response.lower():
+                result["success"] = True
+                result["message"] = f"响应: {response[:50]}... 延迟: {latency}ms"
+                result["latency_ms"] = latency
+            else:
+                result["message"] = f"返回异常: {response[:100]}"
+        except Exception as e:
+            result["message"] = f"连接失败: {str(e)}"
+        return result
 
     def _build_headers(self) -> Dict[str, str]:
         h = {"Content-Type": "application/json"}
@@ -170,9 +236,9 @@ class LLMClient:
     def get_provider_info(self) -> Dict:
         defaults = PROVIDER_DEFAULTS.get(self.config.provider, {})
         return {
-            "provider": self.config.provider.value,
-            "model": self.config.model,
-            "base_url": self.config.base_url,
-            "has_api_key": bool(self.config.api_key),
-            "available_models": defaults.get("models", []),
+           "provider": self.config.provider.value,
+           "model": self.config.model,
+           "base_url": self.config.base_url,
+           "has_api_key": bool(self.config.api_key),
+           "available_models": defaults.get("models", []),
         }

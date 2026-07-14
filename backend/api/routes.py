@@ -213,9 +213,18 @@ async def get_llm_settings():
 async def update_llm_settings(s: LLMSettings):
     if not _llm:
         return {"message": "LLM not configured"}
-    kwargs = {k: v for k, v in s.dict(exclude_none=True).items()}
+    kwargs = {k: v for k, v in s.model_dump(exclude_none=True).items()}
     _llm.update_config(**kwargs)
     return _llm.get_provider_info()
+
+
+
+@router.post("/llm/test")
+async def test_llm():
+    if not _llm:
+        return {"message": "LLM not configured"}
+    result = await _llm.test_connection()
+    return result
 
 
 @router.get("/generator/status")
