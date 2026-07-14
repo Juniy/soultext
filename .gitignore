@@ -9,3 +9,13 @@ dist/
 *.env.local
 .DS_Store
 Thumbs.db
+
+exports/
+_tmp_*.py
+backend_output*.txt
+backend_stderr*.txt
+backend_stdout*.txt
+backend_error*.txt
+start_services.py
+_write_prompts.py
+_update_routes.py
