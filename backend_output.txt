@@ -1,0 +1,5 @@
+Doc folder not found: E:\DEV\git\soultext\backend\doc, using fallback
+Soultext started: 1 techniques, 0 nodes
+LLM: openai / gpt-4o (key: no)
+Foreshadowing: 0 clues, Export: ready
+INFO:     127.0.0.1:3845 - "GET / HTTP/1.1" 200 OK
